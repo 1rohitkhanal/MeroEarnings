@@ -557,7 +557,7 @@ async function handleGoogleLogin() {
   try {
     const { error } = await db.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.href }
+      options: { redirectTo: 'https://earn.khanalrohit.com.np' }
     });
     if (error) throw error;
     // Browser redirects to Google; afterAuth() fires on return via onAuthStateChange
