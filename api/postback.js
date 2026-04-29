@@ -1,29 +1,29 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.SUPABASE_URL, 
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
-
 export default async function handler(req, res) {
-  // CPAGrip sends data like ?user=YOUR_USER_ID&points=50
+  // Both networks will now send ?user=...&points=...
   const { user, points } = req.query;
 
   if (!user || !points) {
-    return res.status(400).send("No data received: Missing user or points");
+    return res.status(400).send("0"); // CPA networks like "0" for fail
   }
 
-  // This calls the SQL function you created in Supabase earlier
+  // Convert points to a number. 
+  // If 'points' is 0.60 (dollars), multiply by 100 to get 60 coins.
+  let amountToAdd = parseFloat(points);
+  
+  if (amountToAdd < 5) { 
+    // Logic: If the value is small (like 0.60), it's likely USD. Multiply it.
+    amountToAdd = amountToAdd * 100;
+  }
+
   const { error } = await supabase.rpc('increment_balance', { 
     user_id: user, 
-    amount: parseInt(points) 
+    amount: Math.floor(amountToAdd) 
   });
 
   if (error) {
-    console.error('Supabase Error:', error);
-    return res.status(500).json({ error: error.message });
+    return res.status(500).send("0");
   }
 
-  // Returning "1" is a CPAGrip requirement to confirm success
+  // Return "1" so both CPAGrip and MyLead know it worked!
   return res.status(200).send("1");
 }
