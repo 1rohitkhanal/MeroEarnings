@@ -228,6 +228,11 @@
     .goal-hint { font-size:.73rem; color:var(--muted); }
     .goal-hint b { color:var(--amber); }
 
+
+    .withdraw-btn.low-coins { opacity: .5; }
+    .withdraw-btn.low-coins:hover { opacity: .65; }
+
+
     /* ACTIVITY */
     .activity-list { max-height:240px; overflow-y:auto; padding:4px 0; }
     .activity-list::-webkit-scrollbar { width:3px; }
@@ -407,8 +412,15 @@
 
         REPLACE YOUR_USER_ID and YOUR_PUBKEY with your CPAGrip credentials.
       -->
-    <div id="cpagrip-wall"></div>
-<script type="text/javascript" src="https://tundrafile.com/script_include.php?id=1893027"></script>
+      <iframe
+        id="cpagrip-wall"
+        src=""
+        data-src="https://www.cpagrip.com/offerwall.php?user_id=2522692&pubkey=YOUR_PUBKEY&tracking_id={UID}"
+        class="offer-iframe hidden"
+        scrolling="yes"
+        frameborder="0"
+        title="MeroEarnings Task Wall">
+      </iframe>
 
       <div class="card-footer hidden" id="wall-footer">
         🔄 Tasks from CPAGrip · Completions verified · Coins credited automatically
@@ -428,8 +440,8 @@
 
       <!-- Withdraw buttons (logged in + enough coins) -->
       <div class="withdraw-btns hidden" id="withdraw-btns-area">
-        <button class="withdraw-btn" onclick="openWithdraw('esewa')"><div class="wdot" style="background:#4CAF50"></div>Withdraw via eSewa<span class="warrow">→</span></button>
-        <button class="withdraw-btn" onclick="openWithdraw('khalti')"><div class="wdot" style="background:#9b59b6"></div>Withdraw via Khalti<span class="warrow">→</span></button>
+        <button class="withdraw-btn" id="esewa-btn" onclick="openWithdraw('esewa')"><div class="wdot" style="background:#4CAF50"></div>Withdraw via eSewa<span class="warrow">→</span></button>
+        <button class="withdraw-btn" id="khalti-btn" onclick="openWithdraw('khalti')"><div class="wdot" style="background:#9b59b6"></div>Withdraw via Khalti<span class="warrow">→</span></button>
       </div>
 
       <!-- Guest prompt -->
@@ -484,27 +496,6 @@
 <!-- ══════════ JAVASCRIPT ══════════ -->
 <script>
 // ─── STATE ───────────────────────────────────────
-async function restoreSession() {
-  const { data: { session } } = await db.auth.getSession();
-
-  if (session?.user) {
-    await afterAuth(session.user);
-  } else {
-    setLoggedOutUI();
-  }
-}
-
-async function restoreSession() {
-  const { data: { session } } = await db.auth.getSession();
-
-  if (session?.user) {
-    await afterAuth(session.user);
-    setLoggedInUI();   // ✅ ADD THIS
-  } else {
-    setLoggedOutUI();
-  }
-}
-  
 let currentUser  = null; // { id, email, name, coins }
 let tasksCompleted = 0;
 let goalBonusGiven = false;
@@ -611,22 +602,18 @@ function setLoggedInUI() {
   // Balance card
   document.getElementById('login-prompt-bal').classList.add('hidden');
   // Offer wall — inject user UUID as tracking_id so postback can credit the right user
-  document.getElementById('offer-gate').classList.add('hidden');
-function setLoggedInUI() {
-  document.getElementById('nav-signup-btn').classList.add('hidden');
-  document.getElementById('nav-login-btn').classList.add('hidden');
-  document.getElementById('nav-logout-btn').classList.remove('hidden');
-  document.getElementById('nav-balance-chip').classList.remove('hidden');
-
-  document.getElementById('login-prompt-bal').classList.add('hidden');
-  document.getElementById('offer-gate').classList.add('hidden');
-
-  loadOfferWall(); // ✅ ADD THIS LINE
-
+ document.getElementById('offer-gate').classList.add('hidden');
+  loadOfferWall();
   updateBalanceDisplay();
 }
-  updateBalanceDisplay();
+ function loadOfferWall() {
+  const iframe = document.getElementById('cpagrip-wall');
+  if (!currentUser) return;
+  iframe.src = iframe.dataset.src.replace('{UID}', currentUser.id);
+  iframe.classList.remove('hidden');
+  document.getElementById('wall-footer').classList.remove('hidden');
 }
+
 
 function setLoggedOutUI() {
   document.getElementById('nav-signup-btn').classList.remove('hidden');
@@ -634,7 +621,7 @@ function setLoggedOutUI() {
   document.getElementById('nav-logout-btn').classList.add('hidden');
   document.getElementById('nav-balance-chip').classList.add('hidden');
   document.getElementById('login-prompt-bal').classList.remove('hidden');
-  document.getElementById('withdraw-btns-area').classList.add('hidden');
+document.getElementById('withdraw-btns-area').classList.add('hidden');
   document.getElementById('offer-gate').classList.remove('hidden');
   const iframe = document.getElementById('cpagrip-wall');
   iframe.src = ''; iframe.classList.add('hidden');
@@ -645,31 +632,27 @@ function setLoggedOutUI() {
   document.getElementById('bal-min-note').innerHTML = 'Minimum withdrawal: <strong>1,000 coins (Rs. 100)</strong>';
 }
 
-function subscribeBalanceUpdates() {
+// ─── BALANCE DISPLAY ──────────────────────────────
+function updateBalanceDisplay() {
   if (!currentUser) return;
+  const coins  = currentUser.coins;
+  const rupees = (coins / 10).toFixed(2);
+  document.getElementById('sb-coins').textContent = coins.toLocaleString();
+  document.getElementById('sb-rupees').textContent = `Rs. ${rupees}`;
+  document.getElementById('nav-coin-count').textContent = `${coins.toLocaleString()} Coins`;
+  // Always show buttons when logged in
+  document.getElementById('withdraw-btns-area').classList.remove('hidden');
+  const notEnough = coins < 1000;
+  ['esewa-btn','khalti-btn'].forEach(id =>
+    document.getElementById(id).classList.toggle('low-coins', notEnough)
+  );
+  if (notEnough) {
+    document.getElementById('bal-min-note').innerHTML = `Need <strong>${(1000-coins).toLocaleString()} more coins</strong> to reach Rs. 100 minimum`;
+  } else {
+    document.getElementById('bal-min-note').innerHTML = `✓ <strong>Ready to withdraw!</strong> Minimum reached.`;
+  }
+}
 
-  db.channel('balance-sync')
-    .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'profiles',
-      filter: `id=eq.${currentUser.id}`
-    }, async () => {
-
-      // ALWAYS re-fetch latest balance
-      const { data } = await db
-        .from('profiles')
-        .select('coins')
-        .eq('id', currentUser.id)
-        .single();
-
-      if (data?.coins !== undefined) {
-        currentUser.coins = data.coins;
-        updateBalanceDisplay();
-        showToast(`Balance updated: +${data.coins} coins`, 'success');
-      }
-    })
-    .subscribe();
 // ─── GOAL TRACKER ─────────────────────────────────
 // Called when postback updates coins (real-time channel below)
 function incrementGoal() {
@@ -695,7 +678,10 @@ function updateWdLabel() {
 }
 function openWithdraw(method) {
   if (!currentUser) return openModal('login-modal');
-  if (currentUser.coins < 1000) return showToast('You need at least 1,000 coins (Rs. 100) to withdraw.', 'error');
+ if (currentUser.coins < 1000) {
+  showToast(`Need ${(1000 - currentUser.coins).toLocaleString()} more coins to withdraw. Keep going! 💪`, 'error');
+  return;
+}
   document.getElementById('wd-coins').textContent = currentUser.coins.toLocaleString();
   document.getElementById('wd-rs').textContent = 'Rs. ' + (currentUser.coins / 10).toFixed(2);
   document.getElementById('wd-method').value = method;
