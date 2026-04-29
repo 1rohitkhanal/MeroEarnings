@@ -7,15 +7,12 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  // MyLead/CPAGrip sends data via GET request
-  // Added 'secret' to the destructured query
   const { user, points, secret } = req.query;
 
-  // 2. THE BOUNCER: Security Check
-  // This prevents random people from hitting your API URL
-  if (secret !== "RohitSecret2026!") {
+  // 2. Security Check (using env variable - not hardcoded)
+  if (secret !== process.env.POSTBACK_SECRET) {
     console.error("Unauthorized postback attempt blocked.");
-    return res.status(403).send("0"); 
+    return res.status(403).send("0");
   }
 
   // 3. Validation
@@ -24,17 +21,18 @@ export default async function handler(req, res) {
     return res.status(400).send("0");
   }
 
-  let amountToAdd = parseFloat(points);
+  // 4. Clean conversion — 1 dollar = 100 coins, always
+  const coinsToAdd = Math.round(parseFloat(points) * 100);
 
-  // 4. SMART MATH logic
-  if (amountToAdd < 5) {
-    amountToAdd = amountToAdd * 100;
+  if (coinsToAdd <= 0) {
+    console.error("Postback failed: Invalid points value");
+    return res.status(400).send("0");
   }
 
-  // 5. DATABASE UPDATE via Secure RPC
-  const { error } = await supabase.rpc('increment_balance', { 
-    user_id: user, 
-    amount: Math.round(amountToAdd) 
+  // 5. Database update via RPC
+  const { error } = await supabase.rpc('increment_balance', {
+    user_id: user,
+    amount: coinsToAdd
   });
 
   if (error) {
@@ -42,6 +40,6 @@ export default async function handler(req, res) {
     return res.status(500).send("0");
   }
 
-  // Success signal
+  console.log(`✅ Credited ${coinsToAdd} coins to user ${user}`);
   return res.status(200).send("1");
 }
