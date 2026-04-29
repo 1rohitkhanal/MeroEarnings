@@ -1,15 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 1. Initialize Supabase (Make sure these are in your Vercel Environment Variables)
+// 1. Initialize Supabase
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // Use Service Role to bypass RLS
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export default async function handler(req, res) {
   // MyLead/CPAGrip sends data via GET request
-  const { user, points } = req.query;
+  // Added 'secret' to the destructured query
+  const { user, points, secret } = req.query;
 
+  // 2. THE BOUNCER: Security Check
+  // This prevents random people from hitting your API URL
+  if (secret !== "RohitSecret2026!") {
+    console.error("Unauthorized postback attempt blocked.");
+    return res.status(403).send("0"); 
+  }
+
+  // 3. Validation
   if (!user || !points) {
     console.error("Postback failed: Missing user or points");
     return res.status(400).send("0");
@@ -17,15 +26,12 @@ export default async function handler(req, res) {
 
   let amountToAdd = parseFloat(points);
 
-  // 2. SMART MATH: 
-  // If you use [payout], 0.43 becomes 43 coins.
-  // If you use [tokens], 100 stays 100 coins.
+  // 4. SMART MATH logic
   if (amountToAdd < 5) {
     amountToAdd = amountToAdd * 100;
   }
 
-  // 3. DATABASE UPDATE
-  // We use Math.round to avoid decimals like 42.9999
+  // 5. DATABASE UPDATE via Secure RPC
   const { error } = await supabase.rpc('increment_balance', { 
     user_id: user, 
     amount: Math.round(amountToAdd) 
@@ -36,6 +42,6 @@ export default async function handler(req, res) {
     return res.status(500).send("0");
   }
 
-  // Success signal for MyLead/CPAGrip
+  // Success signal
   return res.status(200).send("1");
 }
