@@ -347,14 +347,6 @@
               <script type="text/javascript" src="https://playabledownload.com/script_include.php?id=1893027"></script>
 
            </section>
-           <section class="earn-box">
-              <h2>Watch Ads & Earn Money</h2>
-                <p>Complete offers below to earn rewards.</p>
-
-              <!-- CPA Grip Code Here -->
-              <script type="text/javascript" src="https://playabledownload.com/script_include.php?id=1893095"></script>
-
-           </section>
 
 
       </div>
@@ -483,7 +475,7 @@ async function handleSignup() {
     const { data, error } = await db.auth.signUp({ email, password, options:{ data:{ name } } });
     if (error) throw error;
     await sleep(700);
-    await db.from('profiles').update({ name, phone: phone||null }).eq('id', data.user.id);
+   await db.from('profiles').update({ email: data.user.email }).eq('id', data.user.id);
     await afterAuth(data.user);
     closeModal('signup-modal');
     showToast(`Welcome, ${name}! 🎉 Start completing tasks to earn coins.`, 'success');
@@ -536,12 +528,12 @@ async function handleLogout() {
 
 // ─── POST-AUTH ────────────────────────────────────
 async function afterAuth(user) {
-  let { data: profile } = await db.from('profiles').select('name,coins').eq('id', user.id).single();
-  if (!profile) {
-    await db.from('profiles').upsert({ id: user.id, name: user.user_metadata?.name || '', coins: 0 });
-    profile = { name: user.user_metadata?.name || user.email.split('@')[0], coins: 0 };
-  }
-  currentUser = { id: user.id, email: user.email, name: profile.name || user.email.split('@')[0], coins: profile.coins || 0 };
+  let { data: profile } = await db.from('profiles').select('email,balance').eq('id', user.id).single();
+if (!profile) {
+  await db.from('profiles').upsert({ id: user.id, email: user.email, balance: 0 });
+  profile = { email: user.email, balance: 0 };
+}
+  currentUser = { id: user.id, email: user.email, name: user.user_metadata?.name || user.email.split('@')[0], coins: profile.balance || 0 };
   setLoggedInUI();
   subscribeBalanceUpdates();
   loadActivity();
@@ -583,8 +575,26 @@ function loadCPAGripWall() {
   if (!currentUser) return;
   const container = document.getElementById('cpagrip-container');
   if (!container || container.hasChildNodes()) return;
+
+  container.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.85rem;">
+    ⏳ Loading tasks... If nothing appears, your region may have limited offers.<br>
+    <a href="https://www.cpagrip.com/signup.php" target="_blank" style="color:var(--g2);font-weight:600;margin-top:8px;display:inline-block;">
+      Complete offers on CPAGrip directly →
+    </a>
+  </div>`;
+
   const script = document.createElement('script');
   script.src = 'https://playabledownload.com/script_include.php?id=1893027&tracking_id=' + currentUser.id;
+  script.onerror = () => {
+    container.innerHTML = `<div style="padding:2rem;text-align:center;">
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem;">
+        Offer wall unavailable in your region. Try these alternatives:
+      </p>
+      <a href="https://www.cpagrip.com" target="_blank" class="og-btn og-primary" style="display:inline-block;text-decoration:none;padding:10px 20px;background:var(--g1);color:#fff;border-radius:8px;font-weight:600;">
+        Open Offer Wall →
+      </a>
+    </div>`;
+  };
   container.appendChild(script);
   document.getElementById('wall-footer').classList.remove('hidden');
 }
@@ -619,7 +629,7 @@ function incrementGoal() {
     goalBonusGiven = true;
     document.getElementById('goal-badge').className = 'badge badge-success';
     showToast('🎉 Daily goal complete! +100 bonus coins!', 'success');
-    db.from('profiles').update({ coins: currentUser.coins + 100 }).eq('id', currentUser.id)
+   db.from('profiles').update({ balance: currentUser.coins + 100 }).eq ('id', currentUser.id)
       .then(() => { currentUser.coins += 100; updateBalanceDisplay(); });
   }
 }
@@ -657,7 +667,7 @@ async function handleWithdrawal() {
       user_id: currentUser.id, name, wallet_number: number, method, coins, rupees, status:'pending'
     });
     if (error) throw error;
-    await db.from('profiles').update({ coins: 0, total_paid: rupees }).eq('id', currentUser.id);
+    await db.from('profiles').update({ balance: 0 }).eq('id', currentUser.id);
     currentUser.coins = 0;
     updateBalanceDisplay();
     closeModal('withdraw-modal');
@@ -724,9 +734,9 @@ function subscribeBalanceUpdates() {
         event:'UPDATE', schema:'public', table:'profiles',
         filter:`id=eq.${currentUser.id}`
       }, payload => {
-        if (payload.new?.coins !== undefined) {
-          const gained = payload.new.coins - currentUser.coins;
-          currentUser.coins = payload.new.coins;
+       if (payload.new?.balance !== undefined) {
+          const gained = payload.new.balance - currentUser.coins;
+             currentUser.coins = payload.new.balance;
           updateBalanceDisplay();
           if (gained > 0) {
             showToast(`+${gained} coins earned! Keep going 🎉`, 'success');
