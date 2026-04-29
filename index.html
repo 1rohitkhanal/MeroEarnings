@@ -1,96 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="mylead-verification" content="1f3d988231b6c52ebc2bee8bf728a906">
-  <meta name="google-site-verification" content="bIxUsMzgNBCA5xZo1oPXg0_kDaB1-Qbh0cGqELlSr-0" />
-  <title>MeroEarnings.NP – Earn Real Money in Nepal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL  = 'https://qvmqqoxoqjumkcboufeo.supabase.co';
-    const SUPABASE_ANON = 'sb_publishable_HXKKoIortXzlyOyk5oQarg_Xu_q6Y5c';
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  
+  <!-- ═══ TITLE & META ═══ -->
+  <title>MeroEarnings – Earn Money Online in Nepal | eSewa & Khalti Payout</title>
+  <meta name="description" content="Earn real Nepali rupees online from Nepal. Complete simple tasks, surveys, and watch videos. Get paid directly to your eSewa or Khalti wallet. Free to join, no investment needed.">
+  <meta name="keywords" content="earn money online Nepal, eSewa earn, Khalti earn, online income Nepal, surveys Nepal, earning website Nepal, ghar bata paisa kamau">
+  <link rel="canonical" href="https://earn.khanalrohit.com.np/">
+  <html lang="en">
 
-    // ══════════════════════════════════════════════════════
-    // SUPABASE SQL SETUP — run in SQL Editor (one-time)
-    // ══════════════════════════════════════════════════════
-    //
-    // CREATE TABLE IF NOT EXISTS profiles (
-    //   id         UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    //   name       TEXT,
-    //   phone      TEXT,
-    //   coins      INTEGER DEFAULT 0,
-    //   total_paid INTEGER DEFAULT 0,
-    //   created_at TIMESTAMPTZ DEFAULT NOW()
-    // );
-    //
-    // CREATE TABLE IF NOT EXISTS activity_log (
-    //   id           UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    //   display_name TEXT NOT NULL,
-    //   action       TEXT NOT NULL,
-    //   amount       TEXT NOT NULL,
-    //   method       TEXT,
-    //   created_at   TIMESTAMPTZ DEFAULT NOW()
-    // );
-    //
-    // CREATE TABLE IF NOT EXISTS withdrawal_requests (
-    //   id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    //   user_id       UUID REFERENCES profiles(id),
-    //   name          TEXT NOT NULL,
-    //   wallet_number TEXT NOT NULL,
-    //   method        TEXT NOT NULL,
-    //   coins         INTEGER NOT NULL,
-    //   rupees        NUMERIC NOT NULL,
-    //   status        TEXT DEFAULT 'pending',
-    //   created_at    TIMESTAMPTZ DEFAULT NOW()
-    // );
-    //
-    // ALTER TABLE profiles            ENABLE ROW LEVEL SECURITY;
-    // ALTER TABLE activity_log        ENABLE ROW LEVEL SECURITY;
-    // ALTER TABLE withdrawal_requests ENABLE ROW LEVEL SECURITY;
-    //
-    // CREATE POLICY "Own profile" ON profiles
-    //   USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
-    //
-    // CREATE POLICY "Public read activity"  ON activity_log FOR SELECT USING (true);
-    // CREATE POLICY "Auth insert activity"  ON activity_log FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-    //
-    // CREATE POLICY "Own withdrawals" ON withdrawal_requests
-    //   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-    //
-    // -- Auto-create profile row on signup
-    // CREATE OR REPLACE FUNCTION public.handle_new_user()
-    // RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
-    // BEGIN
-    //   INSERT INTO public.profiles (id, name)
-    //   VALUES (NEW.id, NEW.raw_user_meta_data->>'name');
-    //   RETURN NEW;
-    // END; $$;
-    // CREATE TRIGGER on_auth_user_created
-    //   AFTER INSERT ON auth.users
-    //   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-    //
-    // ══════════════════════════════════════════════════════
-    // POSTBACK (Supabase Edge Function)
-    // Deploy at: supabase/functions/postback/index.ts
-    // CPAGrip postback URL:
-    //   https://earn.khanalrohit.com.np/api/postback?user={tracking_id}&points={points}
-    // The function should:
-    //   const userId = url.searchParams.get('user');
-    //   const points = parseInt(url.searchParams.get('points'));
-    //   await supabaseAdmin.rpc('add_coins', { uid: userId, amount: points });
-    //
-    // SQL for the RPC:
-    // CREATE OR REPLACE FUNCTION add_coins(uid UUID, amount INTEGER)
-    // RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$
-    // BEGIN
-    //   UPDATE profiles SET coins = coins + amount WHERE id = uid;
-    // END; $$;
-    // ══════════════════════════════════════════════════════
+  <!-- ═══ OPEN GRAPH (Facebook, WhatsApp, Viber) ═══ -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://earn.khanalrohit.com.np/">
+  <meta property="og:title" content="MeroEarnings – Earn Real Money in Nepal">
+  <meta property="og:description" content="Complete tasks and get paid to your eSewa or Khalti. 10 coins = Rs. 1. Withdraw from Rs. 100.">
+  <meta property="og:image" content="https://earn.khanalrohit.com.np/og-image.png">
+  <meta property="og:locale" content="ne_NP">
+  <meta property="og:site_name" content="MeroEarnings">
+
+  <!-- ═══ TWITTER CARD ═══ -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MeroEarnings – Earn Real Money in Nepal">
+  <meta name="twitter:description" content="Complete tasks and get paid to eSewa or Khalti. Free to join.">
+  <meta name="twitter:image" content="https://earn.khanalrohit.com.np/og-image.png">
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <script> 
+     const SUPABASE_URL  = 'https://qvmqqoxoqjumkcboufeo.supabase.co';
+     const SUPABASE_ANON = 'sb_publishable_HXKKoIortXzlyOyk5oQarg_Xu_q6Y5c'; 
+     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "MeroEarnings",
+        "url": "https://earn.khanalrohit.com.np/",
+        "description": "Earn real money online in Nepal. Get paid to eSewa and Khalti.",
+        "inLanguage": "en",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://earn.khanalrohit.com.np/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I earn money on MeroEarnings?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Create a free account, complete tasks like surveys, watching videos, and installing apps. Each task gives you coins. 10 coins = Rs. 1."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the minimum withdrawal amount?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "You need at least 1,000 coins (Rs. 100) to request a withdrawal to your eSewa or Khalti wallet."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is MeroEarnings free to join?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, MeroEarnings is completely free. No registration fee, no investment required. Just sign up and start earning."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How long does withdrawal take?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Withdrawals are processed manually within 24–48 hours and sent directly to your eSewa or Khalti number."
+            }
+          }
+        ]
+      }
+    ]
+  }
   </script>
 
+  <!-- ═══ VERIFICATION TAGS ═══ -->
+  <meta name="google-site-verification" content="bIxUsMzgNBCA5xZo1oPXg0_kDaB1-Qbh0cGqELlSr-0">
+  <meta name="mylead-verification" content="1f3d988231b6c52ebc2bee8bf728a906">
+
+  <!-- FONTS & SCRIPTS below... -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
