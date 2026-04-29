@@ -1,29 +1,41 @@
+import { createClient } from '@supabase/supabase-js';
+
+// 1. Initialize Supabase (Make sure these are in your Vercel Environment Variables)
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY // Use Service Role to bypass RLS
+);
+
 export default async function handler(req, res) {
-  // Both networks will now send ?user=...&points=...
+  // MyLead/CPAGrip sends data via GET request
   const { user, points } = req.query;
 
   if (!user || !points) {
-    return res.status(400).send("0"); // CPA networks like "0" for fail
+    console.error("Postback failed: Missing user or points");
+    return res.status(400).send("0");
   }
 
-  // Convert points to a number. 
-  // If 'points' is 0.60 (dollars), multiply by 100 to get 60 coins.
   let amountToAdd = parseFloat(points);
-  
-  if (amountToAdd < 5) { 
-    // Logic: If the value is small (like 0.60), it's likely USD. Multiply it.
+
+  // 2. SMART MATH: 
+  // If you use [payout], 0.43 becomes 43 coins.
+  // If you use [tokens], 100 stays 100 coins.
+  if (amountToAdd < 5) {
     amountToAdd = amountToAdd * 100;
   }
 
+  // 3. DATABASE UPDATE
+  // We use Math.round to avoid decimals like 42.9999
   const { error } = await supabase.rpc('increment_balance', { 
     user_id: user, 
-    amount: Math.floor(amountToAdd) 
+    amount: Math.round(amountToAdd) 
   });
 
   if (error) {
+    console.error("Database Error:", error.message);
     return res.status(500).send("0");
   }
 
-  // Return "1" so both CPAGrip and MyLead know it worked!
+  // Success signal for MyLead/CPAGrip
   return res.status(200).send("1");
 }
