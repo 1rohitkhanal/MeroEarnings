@@ -610,27 +610,46 @@ async function afterAuth(user) {
 }
 
 // ─── UI STATE ─────────────────────────────────────
+// ─── UI STATE ─────────────────────────────────────
 function setLoggedInUI() {
   // Nav
   document.getElementById('nav-signup-btn').classList.add('hidden');
   document.getElementById('nav-login-btn').classList.add('hidden');
   document.getElementById('nav-logout-btn').classList.remove('hidden');
   document.getElementById('nav-balance-chip').classList.remove('hidden');
+
   // Balance card
   document.getElementById('login-prompt-bal').classList.add('hidden');
-  // Offer wall — inject user UUID as tracking_id so postback can credit the right user
- document.getElementById('offer-gate').classList.add('hidden');
-  loadOfferWall();
+
+  // Offer wall
+  document.getElementById('offer-gate').classList.add('hidden');
+  
+  // NEW: Load both walls
+  loadOfferWall(); 
   updateBalanceDisplay();
 }
- function loadOfferWall() {
-  const iframe = document.getElementById('cpagrip-wall');
+
+function loadOfferWall() {
   if (!currentUser) return;
-  iframe.src = iframe.dataset.src.replace('{UID}', currentUser.id);
-  iframe.classList.remove('hidden');
+
+  // --- CPAGrip (Server 2) ---
+  const cpaIframe = document.getElementById('cpagrip-wall');
+  if (cpaIframe) {
+    cpaIframe.src = cpaIframe.dataset.src.replace('{UID}', currentUser.id);
+    cpaIframe.classList.remove('hidden');
+  }
+
+  // --- MyLead (Server 1) ---
+  const myLeadIframe = document.getElementById('mylead-iframe');
+  if (myLeadIframe) {
+    // Replace the URL below with your actual MyLead Offerwall link
+    const myLeadBaseUrl = "https://leadmy.com/p/XXXX/YYYY/ZZZZ"; 
+    myLeadIframe.src = `${myLeadBaseUrl}?ml_sub1=${currentUser.id}`;
+    myLeadIframe.classList.remove('hidden');
+  }
+
   document.getElementById('wall-footer').classList.remove('hidden');
 }
-
 
 function setLoggedOutUI() {
   document.getElementById('nav-signup-btn').classList.remove('hidden');
