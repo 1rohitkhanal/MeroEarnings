@@ -286,21 +286,21 @@
       <div class="dot"></div><span id="nav-coin-count">0 Coins</span>
     </div>
     <button class="nav-btn nav-btn-ghost hidden" id="nav-logout-btn" onclick="handleLogout()">Sign Out</button>
-    <button class="nav-btn nav-btn-ghost" id="nav-login-btn" onclick="openModal('login-modal')">Sign In</button>
-    <button class="nav-btn nav-btn-solid" id="nav-signup-btn" onclick="openModal('signup-modal')">Join Free</button>
+    <button class="nav-btn nav-btn-ghost hidden" id="nav-login-btn" onclick="openModal('login-modal')">Sign In</button>
+    <button class="nav-btn nav-btn-solid hidden" id="nav-signup-btn" onclick="openModal('signup-modal')">Join Free</button>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero" id="top">
   <div class="hero-eyebrow">🇳🇵 Made for Nepal</div>
-  <h1>Earn real <em>rupees</em><br>with your free time.</h1>
-  <p class="hero-p">Complete tasks, watch videos, and fill surveys. Cash out directly to your eSewa or Khalti — no minimum fuss, no fake promises.</p>
+  <h1>Complete simple tasks<br>and <em>earn rewards</em> online.</h1>
+  <p class="hero-p">Watch videos, take surveys, and complete offers. Get paid instantly to your eSewa or Khalti wallet. No minimum fuss, no fake promises.</p>
   <div class="payment-badges">
     <div class="pay-badge"><div class="dot" style="background:#4CAF50"></div>eSewa</div>
     <div class="pay-badge"><div class="dot" style="background:#5C2D91"></div>Khalti</div>
   </div>
-  <a href="#earn" class="hero-cta" onclick="document.getElementById('earn').scrollIntoView({behavior:'smooth'});return false;">Start Earning Now →</a>
+  <button class="hero-cta" onclick="startEarning()">Start Earning Now →</button>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -317,7 +317,7 @@
 <div class="stats-row">
   <div class="stat-cell"><span class="stat-n">10 : 1</span><div class="stat-l">Coins to Rs. ratio</div></div>
   <div class="stat-cell"><span class="stat-n">Rs. 100</span><div class="stat-l">Minimum withdrawal</div></div>
-  <div class="stat-cell"><span class="stat-n">24–48h</span><div class="stat-l">Payout processing time</div></div>
+  <div class="stat-cell"><span class="stat-n">24-48h</span><div class="stat-l">Payout processing time</div></div>
   <div class="stat-cell"><span class="stat-n">Free</span><div class="stat-l">Always free to join</div></div>
 </div>
 
@@ -330,8 +330,27 @@
       <div class="card-header">
         <div class="card-title">Available Tasks<small>Offers available in Nepal · New tasks added daily</small></div>
         <div class="flag-pill">🇳🇵 Nepal</div>
-      </div>
 
+           <section class="earn-box">
+              <h2>Watch Ads & Earn Money</h2>
+                <p>Complete offers below to earn rewards.</p>
+
+              <!-- CPA Grip Code Here -->
+              <script type="text/javascript" src="https://playabledownload.com/script_include.php?id=1893027"></script>
+
+           </section>
+           <section class="earn-box">
+              <h2>Watch Ads & Earn Money</h2>
+                <p>Complete offers below to earn rewards.</p>
+
+              <!-- CPA Grip Code Here -->
+              <script type="text/javascript" src="https://playabledownload.com/script_include.php?id=1893095"></script>
+
+           </section>
+
+
+      </div>
+     
       <!-- Guest gate — shown when logged out -->
       <div id="offer-gate" class="offer-gate">
         <div class="offer-gate-icon">🔒</div>
@@ -362,7 +381,7 @@
       <div class="bal-label">Your Balance</div>
       <div class="bal-coins"><span id="sb-coins">0</span><small>coins</small></div>
       <div class="bal-rupees">≈ <strong id="sb-rupees">Rs. 0.00</strong> · 10 coins = Rs. 1</div>
-      <div class="bal-min-note" id="bal-min-note">Minimum withdrawal: <strong>1,000 coins (Rs. 100)</strong></div>
+      <div class="bal-min-note" id="bal-min-note">Minimum withdrawal: <strong>1,000 coins (Rs. 100)</strong></div>a
 
       <!-- Withdraw buttons -->
       <div class="withdraw-btns hidden" id="withdraw-btns-area">
@@ -530,8 +549,8 @@ function setLoggedInUI() {
 
 // ─── UI: LOGGED OUT ───────────────────────────────
 function setLoggedOutUI() {
-  document.getElementById('nav-signup-btn').classList.remove('hidden');
-  document.getElementById('nav-login-btn').classList.remove('hidden');
+  document.getElementById('nav-signup-btn').classList.add('hidden');
+  document.getElementById('nav-login-btn').classList.add('hidden');
   document.getElementById('nav-logout-btn').classList.add('hidden');
   document.getElementById('nav-balance-chip').classList.add('hidden');
   document.getElementById('login-prompt-bal').classList.remove('hidden');
@@ -735,6 +754,15 @@ function setBtnState(btnId, textId, label, disabled) {
   document.getElementById(textId).textContent = label;
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─── START EARNING (Main CTA) ─────────────────────
+function startEarning() {
+  if (!currentUser) {
+    openModal('signup-modal');
+  } else {
+    document.getElementById('earn').scrollIntoView({behavior:'smooth'});
+  }
+}
 
 // ─── INIT ─────────────────────────────────────────
 loadActivity();
