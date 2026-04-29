@@ -407,15 +407,8 @@
 
         REPLACE YOUR_USER_ID and YOUR_PUBKEY with your CPAGrip credentials.
       -->
-      <iframe
-        id="cpagrip-wall"
-        src=""
-        data-src="https://www.cpagrip.com/offerwall.php?user_id=YOUR_USER_ID&pubkey=YOUR_PUBKEY&tracking_id={UID}"
-        class="offer-iframe hidden"
-        scrolling="yes"
-        frameborder="0"
-        title="MeroEarnings Task Wall">
-      </iframe>
+    <div id="cpagrip-wall"></div>
+<script type="text/javascript" src="https://tundrafile.com/script_include.php?id=1893027"></script>
 
       <div class="card-footer hidden" id="wall-footer">
         🔄 Tasks from CPAGrip · Completions verified · Coins credited automatically
@@ -501,7 +494,16 @@ async function restoreSession() {
   }
 }
 
-restoreSession();
+async function restoreSession() {
+  const { data: { session } } = await db.auth.getSession();
+
+  if (session?.user) {
+    await afterAuth(session.user);
+    setLoggedInUI();   // ✅ ADD THIS
+  } else {
+    setLoggedOutUI();
+  }
+}
   
 let currentUser  = null; // { id, email, name, coins }
 let tasksCompleted = 0;
@@ -610,13 +612,18 @@ function setLoggedInUI() {
   document.getElementById('login-prompt-bal').classList.add('hidden');
   // Offer wall — inject user UUID as tracking_id so postback can credit the right user
   document.getElementById('offer-gate').classList.add('hidden');
-function loadOfferWall() {
-  const iframe = document.getElementById('cpagrip-wall');
+function setLoggedInUI() {
+  document.getElementById('nav-signup-btn').classList.add('hidden');
+  document.getElementById('nav-login-btn').classList.add('hidden');
+  document.getElementById('nav-logout-btn').classList.remove('hidden');
+  document.getElementById('nav-balance-chip').classList.remove('hidden');
 
-  if (!currentUser) return;
+  document.getElementById('login-prompt-bal').classList.add('hidden');
+  document.getElementById('offer-gate').classList.add('hidden');
 
-  iframe.src = iframe.dataset.src.replace('{UID}', currentUser.id);
-  iframe.classList.remove('hidden');
+  loadOfferWall(); // ✅ ADD THIS LINE
+
+  updateBalanceDisplay();
 }
   updateBalanceDisplay();
 }
@@ -663,7 +670,7 @@ function subscribeBalanceUpdates() {
       }
     })
     .subscribe();
-}── GOAL TRACKER ─────────────────────────────────
+// ─── GOAL TRACKER ─────────────────────────────────
 // Called when postback updates coins (real-time channel below)
 function incrementGoal() {
   if (tasksCompleted >= 5) return;
