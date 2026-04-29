@@ -491,6 +491,18 @@
 <!-- ══════════ JAVASCRIPT ══════════ -->
 <script>
 // ─── STATE ───────────────────────────────────────
+async function restoreSession() {
+  const { data: { session } } = await db.auth.getSession();
+
+  if (session?.user) {
+    await afterAuth(session.user);
+  } else {
+    setLoggedOutUI();
+  }
+}
+
+restoreSession();
+  
 let currentUser  = null; // { id, email, name, coins }
 let tasksCompleted = 0;
 let goalBonusGiven = false;
@@ -598,12 +610,14 @@ function setLoggedInUI() {
   document.getElementById('login-prompt-bal').classList.add('hidden');
   // Offer wall — inject user UUID as tracking_id so postback can credit the right user
   document.getElementById('offer-gate').classList.add('hidden');
+function loadOfferWall() {
   const iframe = document.getElementById('cpagrip-wall');
-  if (!iframe.src) {
-    iframe.src = iframe.dataset.src.replace('{UID}', currentUser.id);
-    iframe.classList.remove('hidden');
-    document.getElementById('wall-footer').classList.remove('hidden');
-  }
+
+  if (!currentUser) return;
+
+  iframe.src = iframe.dataset.src.replace('{UID}', currentUser.id);
+  iframe.classList.remove('hidden');
+}
   updateBalanceDisplay();
 }
 
@@ -624,24 +638,32 @@ function setLoggedOutUI() {
   document.getElementById('bal-min-note').innerHTML = 'Minimum withdrawal: <strong>1,000 coins (Rs. 100)</strong>';
 }
 
-// ─── BALANCE DISPLAY ──────────────────────────────
-function updateBalanceDisplay() {
+function subscribeBalanceUpdates() {
   if (!currentUser) return;
-  const coins  = currentUser.coins;
-  const rupees = (coins / 10).toFixed(2);
-  document.getElementById('sb-coins').textContent = coins.toLocaleString();
-  document.getElementById('sb-rupees').textContent = `Rs. ${rupees}`;
-  document.getElementById('nav-coin-count').textContent = `${coins.toLocaleString()} Coins`;
-  if (coins >= 1000) {
-    document.getElementById('bal-min-note').innerHTML = `✓ <strong>Ready to withdraw!</strong> Minimum reached.`;
-    document.getElementById('withdraw-btns-area').classList.remove('hidden');
-  } else {
-    document.getElementById('bal-min-note').innerHTML = `Need <strong>${(1000-coins).toLocaleString()} more coins</strong> to reach Rs. 100 minimum`;
-    document.getElementById('withdraw-btns-area').classList.add('hidden');
-  }
-}
 
-// ─── GOAL TRACKER ─────────────────────────────────
+  db.channel('balance-sync')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'profiles',
+      filter: `id=eq.${currentUser.id}`
+    }, async () => {
+
+      // ALWAYS re-fetch latest balance
+      const { data } = await db
+        .from('profiles')
+        .select('coins')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (data?.coins !== undefined) {
+        currentUser.coins = data.coins;
+        updateBalanceDisplay();
+        showToast(`Balance updated: +${data.coins} coins`, 'success');
+      }
+    })
+    .subscribe();
+}── GOAL TRACKER ─────────────────────────────────
 // Called when postback updates coins (real-time channel below)
 function incrementGoal() {
   if (tasksCompleted >= 5) return;
