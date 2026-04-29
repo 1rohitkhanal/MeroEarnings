@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://earn.khanalrohit.com.np/sitemap.xml
