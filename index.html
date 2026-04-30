@@ -286,8 +286,8 @@
       <div class="dot"></div><span id="nav-coin-count">0 Coins</span>
     </div>
     <button class="nav-btn nav-btn-ghost hidden" id="nav-logout-btn" onclick="handleLogout()">Sign Out</button>
-    <button class="nav-btn nav-btn-ghost hidden" id="nav-login-btn" onclick="openModal('login-modal')">Sign In</button>
-    <button class="nav-btn nav-btn-solid hidden" id="nav-signup-btn" onclick="openModal('signup-modal')">Join Free</button>
+    <button class="nav-btn nav-btn-ghost " id="nav-login-btn" onclick="openModal('login-modal')">Sign In</button>
+    <button class="nav-btn nav-btn-solid " id="nav-signup-btn" onclick="openModal('signup-modal')">Join Free</button>
   </div>
 </nav>
 
@@ -338,18 +338,7 @@
       <div class="card-header">
         <div class="card-title">Available Tasks<small>Offers available in Nepal · New tasks added daily</small></div>
         <div class="flag-pill">🇳🇵 Nepal</div>
-
-           <section class="earn-box">
-              <h2>Watch Ads & Earn Money</h2>
-                <p>Complete offers below to earn rewards.</p>
-
-              <!-- CPA Grip Code Here -->
-              <script type="text/javascript" src="https://playabledownload.com/script_include.php?id=1893027"></script>
-
-           </section>
-
-
-      </div>
+        </div>
      
       <!-- Guest gate — shown when logged out -->
       <div id="offer-gate" class="offer-gate">
@@ -554,8 +543,6 @@ function setLoggedInUI() {
 
 // ─── UI: LOGGED OUT ───────────────────────────────
 function setLoggedOutUI() {
-  document.getElementById('nav-signup-btn').classList.add('hidden');
-  document.getElementById('nav-login-btn').classList.add('hidden');
   document.getElementById('nav-logout-btn').classList.add('hidden');
   document.getElementById('nav-balance-chip').classList.add('hidden');
   document.getElementById('login-prompt-bal').classList.remove('hidden');
