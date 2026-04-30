@@ -563,26 +563,14 @@ function loadCPAGripWall() {
   const container = document.getElementById('cpagrip-container');
   if (!container || container.hasChildNodes()) return;
 
-  container.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.85rem;">
-    ⏳ Loading tasks... If nothing appears, your region may have limited offers.<br>
-    <a href="https://www.cpagrip.com/signup.php" target="_blank" style="color:var(--g2);font-weight:600;margin-top:8px;display:inline-block;">
-      Complete offers on CPAGrip directly →
-    </a>
-  </div>`;
+  container.innerHTML = `
+    <iframe
+      src="https://www.cpagrip.com/offerwall.php?user_id=2522692&pubkey=7a4670f0cb16b03fd403709087187859&tracking_id=${currentUser.id}"
+      style="width:100%;min-height:600px;border:none;display:block;"
+      scrolling="yes"
+      frameborder="0">
+    </iframe>`;
 
-  const script = document.createElement('script');
-  script.src = 'https://playabledownload.com/script_include.php?id=1893027&tracking_id=' + currentUser.id;
-  script.onerror = () => {
-    container.innerHTML = `<div style="padding:2rem;text-align:center;">
-      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem;">
-        Offer wall unavailable in your region. Try these alternatives:
-      </p>
-      <a href="https://www.cpagrip.com" target="_blank" class="og-btn og-primary" style="display:inline-block;text-decoration:none;padding:10px 20px;background:var(--g1);color:#fff;border-radius:8px;font-weight:600;">
-        Open Offer Wall →
-      </a>
-    </div>`;
-  };
-  container.appendChild(script);
   document.getElementById('wall-footer').classList.remove('hidden');
 }
 
