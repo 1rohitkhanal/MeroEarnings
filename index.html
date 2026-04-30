@@ -23,8 +23,8 @@
 
   <meta name="google-site-verification" content="bIxUsMzgNBCA5xZo1oPXg0_kDaB1-Qbh0cGqELlSr-0">
   <meta name="mylead-verification" content="1f3d988231b6c52ebc2bee8bf728a906">
-  <script type="text/javascript" src="https://playabledownload.com/script_include.php?id=1893027"></script>
-  <script src="https://pl29300541.profitablecpmratenetwork.com/31/8c/26/318c26be1c706ba36ed714cb18e16cd0.js"></script>
+
+  <!-- Ad network scripts (pop/push — load last, non-blocking) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL  = 'https://qvmqqoxoqjumkcboufeo.supabase.co';
@@ -66,6 +66,56 @@
     html { scroll-behavior: smooth; }
     body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--surface); color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; }
     .hidden { display:none !important; }
+
+    /* ── AD ZONES ─────────────────────────────────── */
+    /* 
+      .ad-zone: a clean, labelled container for any ad unit.
+      Place it anywhere in the page flow and it just works.
+    */
+    .ad-zone {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    .ad-zone-label {
+      font-size: .62rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      opacity: .6;
+      align-self: flex-start;
+      padding-left: 4px;
+    }
+    /* Banner ad — full width horizontal slot */
+    .ad-zone-banner {
+      min-height: 90px;
+    }
+    /* Rectangle ad — standard 300×250 style */
+    .ad-zone-rect {
+      min-height: 250px;
+      max-width: 336px;
+      width: 100%;
+    }
+    /* Wide banner between sections */
+    .ad-strip {
+      background: var(--surface);
+      padding: 12px 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+    .ad-strip .ad-zone {
+      max-width: 1160px;
+    }
 
     #toast-container { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
     .toast { background:var(--g1); color:#fff; padding:12px 18px; border-radius:10px; font-size:.85rem; font-weight:500; max-width:320px; animation:toastIn .3s ease; box-shadow:0 4px 20px rgba(0,0,0,.15); pointer-events:all; }
@@ -210,6 +260,7 @@
       .hero { padding:3rem 1rem 2.5rem; }
       .dashboard { padding:1.25rem 1rem; }
       .modal { padding:1.5rem; }
+      .ad-zone-rect { max-width: 100%; }
     }
   </style>
 </head>
@@ -287,8 +338,8 @@
       <div class="dot"></div><span id="nav-coin-count">0 Coins</span>
     </div>
     <button class="nav-btn nav-btn-ghost hidden" id="nav-logout-btn" onclick="handleLogout()">Sign Out</button>
-    <button class="nav-btn nav-btn-ghost " id="nav-login-btn" onclick="openModal('login-modal')">Sign In</button>
-    <button class="nav-btn nav-btn-solid " id="nav-signup-btn" onclick="openModal('signup-modal')">Join Free</button>
+    <button class="nav-btn nav-btn-ghost" id="nav-login-btn" onclick="openModal('login-modal')">Sign In</button>
+    <button class="nav-btn nav-btn-solid" id="nav-signup-btn" onclick="openModal('signup-modal')">Join Free</button>
   </div>
 </nav>
 
@@ -302,10 +353,25 @@
     <div class="pay-badge"><div class="dot" style="background:#5C2D91"></div>Khalti</div>
   </div>
   <button class="hero-cta" onclick="startEarning()">Start Earning Now →</button>
-         <p style="margin-top:10px;font-size:0.85rem;color:gray;">
-           No investment • Instant tasks • eSewa / Khalti payout
-        </p>
+  <p style="margin-top:10px;font-size:0.85rem;color:gray;">
+    No investment • Instant tasks • eSewa / Khalti payout
+  </p>
 </section>
+
+<!-- ══ AD ZONE 1: Below Hero (leaderboard banner) ══════════════════════ -->
+<!-- 
+  PASTE your Adsterra / profitablecpmrate BANNER ad code inside this div.
+  This renders as a clean full-width banner between the hero and how-it-works.
+-->
+<div class="ad-strip">
+  <div class="ad-zone ad-zone-banner" style="max-width:1160px;">
+    <span class="ad-zone-label">Advertisement</span>
+    <!-- ▼ PASTE BANNER AD CODE HERE ▼ -->
+    <script async="async" data-cfasync="false" src="https://pl29300543.profitablecpmratenetwork.com/cfe6b1eb549724e7f7ca277697936d3f/invoke.js"></script>
+    <div id="container-cfe6b1eb549724e7f7ca277697936d3f"></div>
+    <!-- ▲ END AD CODE ▲ -->
+  </div>
+</div>
 
 <!-- HOW IT WORKS -->
 <div class="how-strip">
@@ -316,10 +382,10 @@
     <div class="how-item"><div class="how-num">04</div><div class="how-title">Get paid in NPR</div><div class="how-desc">We send directly to your eSewa or Khalti account. Real money, no gimmicks.</div></div>
   </div>
 </div>
- <div style="text-align:center; padding:30px;">
-  <button class="hero-cta" onclick="startEarning()">
-    Start Earning Now →
-  </button>
+
+<!-- CTA repeat -->
+<div style="text-align:center; padding:30px;">
+  <button class="hero-cta" onclick="startEarning()">Start Earning Now →</button>
 </div>
 
 <!-- STATS -->
@@ -330,28 +396,42 @@
   <div class="stat-cell"><span class="stat-n">Free</span><div class="stat-l">Always free to join</div></div>
 </div>
 
+<!-- ══ AD ZONE 2: Between stats and dashboard (wide banner) ═══════════ -->
+<!--
+  Good place for a second banner. Adsterra 728x90 or 970x90 fits well here.
+  PASTE your second banner ad code inside.
+-->
+<div class="ad-strip" style="padding:16px 1.5rem;">
+  <div class="ad-zone ad-zone-banner" style="max-width:1160px;">
+    <span class="ad-zone-label">Advertisement</span>
+    <!-- ▼ PASTE SECOND BANNER AD CODE HERE ▼ -->
+    <!-- Example: your playabledownload script goes here, not inside a card-header -->
+    <script type="text/javascript" src="https://playabledownload.com/script_include.php?id=1893027"></script>
+    <!-- ▲ END AD CODE ▲ -->
+  </div>
+</div>
+
 <!-- DASHBOARD -->
 <div class="dashboard" id="earn">
 
   <!-- LEFT: OFFER WALL -->
   <div>
     <div class="card">
+      <!-- card-header: ONLY title and flag — NO ad scripts here -->
       <div class="card-header">
         <div class="card-title">Available Tasks<small>Offers available in Nepal · New tasks added daily</small></div>
         <div class="flag-pill">🇳🇵 Nepal</div>
-       <script async="async" data-cfasync="false" src="https://pl29300543.profitablecpmratenetwork.com/cfe6b1eb549724e7f7ca277697936d3f/invoke.js"></script>
-        <div id="container-cfe6b1eb549724e7f7ca277697936d3f"></div>
-        <script src="https://playabledownload.com/script_include.php?id=1893027" width="100%" height="600"></script>
+      </div>
+
       <!-- Guest gate — shown when logged out -->
-        </div>
       <div id="offer-gate" class="offer-gate">
         <div class="offer-gate-icon">🔒</div>
         <h4>Sign in to unlock tasks</h4>
         <p>Create a free account or sign in to start completing tasks and earn real rupees paid to your eSewa or Khalti.</p>
         <div class="offer-gate-btns">
-                <button class="og-btn og-primary" onclick="openModal('signup-modal')"> 
-                Unlock Tasks & Start Earning →
-             </button>
+          <button class="og-btn og-primary" onclick="openModal('signup-modal')">
+            Unlock Tasks & Start Earning →
+          </button>
           <button class="og-btn og-outline" onclick="openModal('login-modal')">Sign In</button>
         </div>
       </div>
@@ -364,6 +444,19 @@
       <div class="card-footer hidden" id="wall-footer">
         🔄 Tasks from CPAGrip · Completions verified · Coins credited automatically
       </div>
+    </div>
+
+    <!-- ══ AD ZONE 3: Below offer wall (rectangle / native ad) ═════════ -->
+    <!--
+      This slot sits below the task card and above the footer.
+      Great for a 300x250 or native ad unit from Adsterra.
+      PASTE your rectangle / native ad code below.
+    -->
+    <div class="ad-zone ad-zone-banner" style="margin-top:1.25rem;">
+      <span class="ad-zone-label">Advertisement</span>
+      <!-- ▼ PASTE RECTANGLE / NATIVE AD CODE HERE ▼ -->
+
+      <!-- ▲ END AD CODE ▲ -->
     </div>
   </div>
 
@@ -404,6 +497,18 @@
       </div>
     </div>
 
+    <!-- ══ AD ZONE 4: Sidebar rectangle (best performing slot) ════════ -->
+    <!--
+      Sidebar ads perform very well. A 300x250 here is a classic high-CTR slot.
+      PASTE your sidebar ad code below.
+    -->
+    <div class="ad-zone ad-zone-rect">
+      <span class="ad-zone-label">Advertisement</span>
+      <!-- ▼ PASTE SIDEBAR AD CODE HERE (300x250 recommended) ▼ -->
+
+      <!-- ▲ END AD CODE ▲ -->
+    </div>
+
     <!-- Live Activity -->
     <div class="card">
       <div class="card-header">
@@ -422,9 +527,9 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">MeroEarnings.NP<small>© 2026 MeroEarnings · A Rohit Khanal Project</small></div>
-     <div class="developer-tag">
-                <p>Built with ❤️ by <a href="https://www.linkedin.com/in/rohit-khanal-17b892379" target="_blank">Rohit Khanal</a></p>
-            </div>
+    <div class="developer-tag">
+      <p>Built with ❤️ by <a href="https://www.linkedin.com/in/rohit-khanal-17b892379" target="_blank" style="color:var(--g4);">Rohit Khanal</a></p>
+    </div>
     <ul class="footer-links">
       <li><a href="#">Terms of Service</a></li>
       <li><a href="#">Privacy Policy</a></li>
@@ -467,7 +572,7 @@ async function handleSignup() {
     const { data, error } = await db.auth.signUp({ email, password, options:{ data:{ name } } });
     if (error) throw error;
     await sleep(700);
-   await db.from('profiles').update({ email: data.user.email }).eq('id', data.user.id);
+    await db.from('profiles').update({ email: data.user.email }).eq('id', data.user.id);
     await afterAuth(data.user);
     closeModal('signup-modal');
     showToast(`Welcome, ${name}! 🎉 Start completing tasks to earn coins.`, 'success');
@@ -521,10 +626,10 @@ async function handleLogout() {
 // ─── POST-AUTH ────────────────────────────────────
 async function afterAuth(user) {
   let { data: profile } = await db.from('profiles').select('email,balance').eq('id', user.id).single();
-if (!profile) {
-  await db.from('profiles').upsert({ id: user.id, email: user.email, balance: 0 });
-  profile = { email: user.email, balance: 0 };
-}
+  if (!profile) {
+    await db.from('profiles').upsert({ id: user.id, email: user.email, balance: 0 });
+    profile = { email: user.email, balance: 0 };
+  }
   currentUser = { id: user.id, email: user.email, name: user.user_metadata?.name || user.email.split('@')[0], coins: profile.balance || 0 };
   setLoggedInUI();
   subscribeBalanceUpdates();
@@ -565,7 +670,6 @@ function loadCPAGripWall() {
   if (!currentUser) return;
   const container = document.getElementById('cpagrip-container');
   if (!container || container.hasChildNodes()) return;
-
   container.innerHTML = `
     <iframe
       src="https://www.cpagrip.com/offerwall.php?user_id=2522692&pubkey=7a4670f0cb16b03fd403709087187859&tracking_id=${currentUser.id}"
@@ -573,7 +677,6 @@ function loadCPAGripWall() {
       scrolling="yes"
       frameborder="0">
     </iframe>`;
-
   document.getElementById('wall-footer').classList.remove('hidden');
 }
 
@@ -607,7 +710,7 @@ function incrementGoal() {
     goalBonusGiven = true;
     document.getElementById('goal-badge').className = 'badge badge-success';
     showToast('🎉 Daily goal complete! +100 bonus coins!', 'success');
-   db.from('profiles').update({ balance: currentUser.coins + 100 }).eq ('id', currentUser.id)
+    db.from('profiles').update({ balance: currentUser.coins + 100 }).eq('id', currentUser.id)
       .then(() => { currentUser.coins += 100; updateBalanceDisplay(); });
   }
 }
@@ -712,9 +815,9 @@ function subscribeBalanceUpdates() {
         event:'UPDATE', schema:'public', table:'profiles',
         filter:`id=eq.${currentUser.id}`
       }, payload => {
-       if (payload.new?.balance !== undefined) {
+        if (payload.new?.balance !== undefined) {
           const gained = payload.new.balance - currentUser.coins;
-             currentUser.coins = payload.new.balance;
+          currentUser.coins = payload.new.balance;
           updateBalanceDisplay();
           if (gained > 0) {
             showToast(`+${gained} coins earned! Keep going 🎉`, 'success');
@@ -769,6 +872,10 @@ function startEarning() {
 loadActivity();
 subscribeActivity();
 </script>
-  <script src="https://pl29300542.profitablecpmratenetwork.com/77/41/08/7741087215c5d563b500a292354fbced.js"></script>
+
+<!-- Pop/push ad scripts load LAST so they don't block page render -->
+<script src="https://pl29300541.profitablecpmratenetwork.com/31/8c/26/318c26be1c706ba36ed714cb18e16cd0.js"></script>
+<script src="https://pl29300542.profitablecpmratenetwork.com/77/41/08/7741087215c5d563b500a292354fbced.js"></script>
+
 </body>
 </html>
